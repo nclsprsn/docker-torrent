@@ -1,0 +1,11 @@
+#!/usr/bin/with-contenv bash
+
+exec screen -DmS rtorrent s6-setuidgid www-data /usr/bin/rtorrent -n -o import=/.rtorrent.rc
+
+until [ -e "/rtorrent/.session/rtorrent.lock" ];
+do
+    sleep 1s
+done
+
+rtorrent_pid=$(< /rtorrent/.session/rtorrent.lock cut -d '+' -f 2)
+tail -n 1 -f /var/log/rtorrent/rtorrent.log "$rtorrent_pid"

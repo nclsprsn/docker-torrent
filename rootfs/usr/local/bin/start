@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Create user
+addgroup -g ${GID} -S www-data
+adduser -u ${UID} -D -S -G www-data www-data
+
+rm -rf /rtorrent/.session
+
+# Create working directories if not exists
+mkdir -p \
+  /rtorrent/{downloads,watch,rutorrent/user-profiles,rutorrent/user-profiles/torrents,.session} \
+  /run/{nginx,php,rpc} \
+  /usr/share/nginx/html \
+  /var/log/{rtorrent,php,nginx} \
+  /var/tmp/nginx \
+
+# Change permission to ruTorrent's webserver user
+chown -R www-data:www-data /rtorrent /var/log/rtorrent /var/log/php /var/log/nginx /run /usr/share/nginx/html/rutorrent /var/tmp/nginx
+
+# Use s6 to supervise all services
+exec /init
